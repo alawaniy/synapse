@@ -28,17 +28,36 @@ jobs:
 #          auth-type: 'SERVICE_PRINCIPAL'  # Ensure auth-type is set to 'spn'
            creds: ${{ secrets.AZURE_CREDENTIALS }}
           
+#      - name: Get Credentials from Key Vault
+#        id: get-credentials
+#        uses: azure/CLI@v1
+#        with:
+#          azcliversion: 2.30.0
+#          scriptType: bash
+#          inlineScript: |
+#            username=$(az keyvault secret show --name SYNAPSE-USERNAME --vault-name adlssybapsekeyvault --query value -o tsv)
+#            password=$(az keyvault secret show --name SYNAPSE-PASSWORD --vault-name adlssybapsekeyvault --query value -o tsv)
+#            echo "SYNAPSE_USERNAME1=$username" >> $GITHUB_ENV
+#            echo "SYNAPSE_PASSWORD1=$password" >> $GITHUB_ENV
+
       - name: Get Credentials from Key Vault
         id: get-credentials
-        uses: azure/CLI@v1
-        with:
-          azcliversion: 2.30.0
-          scriptType: bash
-          inlineScript: |
-            username=$(az keyvault secret show --name SYNAPSE-USERNAME --vault-name adlssybapsekeyvault --query value -o tsv)
-            password=$(az keyvault secret show --name SYNAPSE-PASSWORD --vault-name adlssybapsekeyvault --query value -o tsv)
-            echo "SYNAPSE_USERNAME1=$username" >> $GITHUB_ENV
-            echo "SYNAPSE_PASSWORD1=$password" >> $GITHUB_ENV
+        run: |
+          set -e
+          echo "Fetching username from Key Vault..."
+          username=$(az keyvault secret show --name SYNAPSE-USERNAME --vault-name <Your-Key-Vault-Name> --query value -o tsv)
+          if [ -z "$username" ]; then
+            echo "Error: Unable to fetch SYNAPSE-USERNAME from Key Vault"
+            exit 1
+          fi
+          echo "Fetching password from Key Vault..."
+          password=$(az keyvault secret show --name SYNAPSE-PASSWORD --vault-name <Your-Key-Vault-Name> --query value -o tsv)
+          if [ -z "$password" ]; then
+            echo "Error: Unable to fetch SYNAPSE-PASSWORD from Key Vault"
+            exit 1
+          fi
+          echo "SYNAPSE_USERNAME1=$username" >> $GITHUB_ENV
+          echo "SYNAPSE_PASSWORD1=$password" >> $GITHUB_ENV
 
           
       - name: Set up SQLCMD
