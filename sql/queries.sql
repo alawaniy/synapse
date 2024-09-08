@@ -1,14 +1,14 @@
 -- Step 1: Create the database if it doesn't exist
 IF NOT EXISTS (
-    SELECT * FROM sys.databases WHERE name = 'sqlcmdpayercurrent2'
+    SELECT * FROM sys.databases WHERE name = 'sqlcmdpayercurrent3'
 )
 BEGIN
-    CREATE DATABASE sqlcmdpayercurrent2;
+    CREATE DATABASE sqlcmdpayercurrent3;
 END
 GO
 
 -- Step 2: Use the database
-USE sqlcmdpayercurrent2;
+USE sqlcmdpayercurrent3;
 GO
 
 -- Step 3: Create a Master Key if it doesn't exist
@@ -22,33 +22,34 @@ GO
 
 -- Step 4: Create a database-scoped credential if it doesn't exist
 IF NOT EXISTS (
-    SELECT * FROM sys.database_scoped_credentials WHERE name = 'WorkspaceIdentityCurrent2'
+    SELECT * FROM sys.database_scoped_credentials WHERE name = 'WorkspaceIdentityCurrent3'
 )
 BEGIN
-    CREATE DATABASE SCOPED CREDENTIAL WorkspaceIdentityCurrent2
+    CREATE DATABASE SCOPED CREDENTIAL WorkspaceIdentityCurrent3
     WITH IDENTITY = 'Managed Identity';
 END
 GO
 
 -- Step 5: Create an external data source if it doesn't exist
 IF NOT EXISTS (
-    SELECT * FROM sys.external_data_sources WHERE name = 'MyWorkspaceIdentityDataSourceCurrent2'
+    SELECT * FROM sys.external_data_sources WHERE name = 'MyWorkspaceIdentityDataSourceCurrent3'
 )
 BEGIN
-    CREATE EXTERNAL DATA SOURCE MyWorkspaceIdentityDataSourceCurrent2
+    CREATE EXTERNAL DATA SOURCE MyWorkspaceIdentityDataSourceCurrent3
     WITH (
         LOCATION = 'https://<ADLS_ACCOUNT_NAME>.dfs.core.windows.net/',
-        CREDENTIAL = WorkspaceIdentityCurrent2
+        CREDENTIAL = WorkspaceIdentityCurrent3
     );
 END
 GO
 
--- Step 6: Create a view if it doesn't exist
+-- Step 6: Create a view using dynamic SQL if it doesn't exist
 IF NOT EXISTS (
-    SELECT * FROM sys.views WHERE name = 'UpdatedAccountYatharthCurrent2'
+    SELECT * FROM sys.views WHERE name = 'UpdatedAccountYatharthCurrent3'
 )
 BEGIN
-    CREATE VIEW UpdatedAccountYatharthCurrent2 AS
+    DECLARE @sql NVARCHAR(MAX) = '
+    CREATE VIEW UpdatedAccountYatharthCurrent3 AS
     SELECT
         event.[type],
         event.[version],
@@ -65,12 +66,12 @@ BEGIN
         payload.[accountNumberLasFourDigits],
         payload.[accountType]
     FROM OPENROWSET(
-        BULK 'accounts/day1/accounts1.json',
-        DATA_SOURCE = 'MyWorkspaceIdentityDataSourceCurrent2',
-        FORMAT = 'CSV',
-        FIELDTERMINATOR = '0x0b',
-        FIELDQUOTE = '0x0b',
-        ROWTERMINATOR = '0x0a',
+        BULK ''accounts/day1/accounts1.json'',
+        DATA_SOURCE = ''MyWorkspaceIdentityDataSourceCurrent3'',
+        FORMAT = ''CSV'',
+        FIELDTERMINATOR = ''0x0b'',
+        FIELDQUOTE = ''0x0b'',
+        ROWTERMINATOR = ''0x0a'',
         FIRSTROW = 1
     )
     WITH (
@@ -97,9 +98,11 @@ BEGIN
         [accountNumberLasFourDigits] NVARCHAR(50),
         [accountType] NVARCHAR(50)
     ) AS payload;
+    ';
+    EXEC sp_executesql @sql;
 END
 GO
 
 -- Step 7: Query the view
-SELECT * FROM UpdatedAccountYatharthCurrent2;
+SELECT * FROM UpdatedAccountYatharthCurrent3;
 GO
