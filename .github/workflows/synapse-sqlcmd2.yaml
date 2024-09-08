@@ -26,8 +26,8 @@ jobs:
           azcliversion: 2.30.0
           scriptType: bash
           inlineScript: |
-            username=$(az keyvault secret show --name SYNAPSE-USERNAME --vault-name <Your-Key-Vault-Name> --query value -o tsv)
-            password=$(az keyvault secret show --name SYNAPSE-PASSWORD --vault-name <Your-Key-Vault-Name> --query value -o tsv)
+            username=$(az keyvault secret show --name SYNAPSE-USERNAME --vault-name adlssybapsekeyvault --query value -o tsv)
+            password=$(az keyvault secret show --name SYNAPSE-PASSWORD --vault-name adlssybapsekeyvault --query value -o tsv)
             echo "SYNAPSE_USERNAME=$username" >> $GITHUB_ENV
             echo "SYNAPSE_PASSWORD=$password" >> $GITHUB_ENV
         env:
