@@ -1,9 +1,9 @@
 -- Step 1: Create the database
-CREATE DATABASE sqlcmdpayer1;
+CREATE DATABASE sqlcmdpayer11;
 GO
 
 -- Step 2: Use the database
-USE sqlcmdpayer1;
+USE sqlcmdpayer11;
 GO
 
 -- Step 3: Create a Master Key
@@ -24,7 +24,7 @@ WITH (
 GO
 
 -- Step 6: Create a view
-CREATE VIEW UpdatedAccountYatharth AS
+CREATE VIEW UpdatedAccountYatharth11 AS
 SELECT
     event.[type],
     event.[version],
@@ -76,5 +76,5 @@ WITH (
 GO
 
 -- Step 7: Query the view
-SELECT * FROM UpdatedAccountYatharth;
+SELECT * FROM UpdatedAccountYatharth11;
 GO
