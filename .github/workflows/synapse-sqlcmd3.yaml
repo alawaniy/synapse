@@ -6,11 +6,10 @@ on:
       - main
   workflow_dispatch:  # Allows manual triggering
 
-
 permissions:
   id-token: write  # Ensure write permissions for id-token
   contents: read   # Example: read permissions for repository contents
-
+  
 jobs:
   execute-sqlcmd:
     runs-on: ubuntu-latest
@@ -19,34 +18,48 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Azure Login via Service Principal
+      - name: Azure Login
         uses: azure/login@v1
         with:
-          client-id: ${{ secrets.AZURE_CLIENT_ID }}
-          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          client-secret: ${{ secrets.AZURE_CLIENT_SECRET }}
-          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-          auth-type: "SERVICE_PRINCIPAL"
-
+#          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+#          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+#          client-secret: ${{ secrets.AZURE_CLIENT_SECRET }}
+#          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+#          auth-type: 'SERVICE_PRINCIPAL'  # Ensure auth-type is set to 'spn'
+           creds: ${{ secrets.AZURE_CREDENTIALS }}
+          
       - name: Get Credentials from Key Vault
         id: get-credentials
-        run: |
-          set -e
-          echo "Fetching username from Key Vault..."
-          username=$(az keyvault secret show --name SYNAPSE-USERNAME --vault-name <Your-Key-Vault-Name> --query value -o tsv)
-          if [ -z "$username" ]; then
-            echo "Error: Unable to fetch SYNAPSE-USERNAME from Key Vault"
-            exit 1
-          fi
-          echo "Fetching password from Key Vault..."
-          password=$(az keyvault secret show --name SYNAPSE-PASSWORD --vault-name <Your-Key-Vault-Name> --query value -o tsv)
-          if [ -z "$password" ]; then
-            echo "Error: Unable to fetch SYNAPSE-PASSWORD from Key Vault"
-            exit 1
-          fi
-          echo "SYNAPSE_USERNAME=$username" >> $GITHUB_ENV
-          echo "SYNAPSE_PASSWORD=$password" >> $GITHUB_ENV
+        uses: azure/CLI@v1
+        with:
+          azcliversion: 2.30.0
+          scriptType: bash
+          inlineScript: |
+            username=$(az keyvault secret show --name SYNAPSE-USERNAME --vault-name adlssybapsekeyvault --query value -o tsv)
+            password=$(az keyvault secret show --name SYNAPSE-PASSWORD --vault-name adlssybapsekeyvault --query value -o tsv)
+            echo "SYNAPSE_USERNAME1=$username" >> $GITHUB_ENV
+            echo "SYNAPSE_PASSWORD1=$password" >> $GITHUB_ENV
 
+#      - name: Get Credentials from Key Vault
+#        id: get-credentials
+#        run: |
+#          set -e
+#          echo "Fetching username from Key Vault..."
+#          username=$(az keyvault secret show --name SYNAPSE-USERNAME --vault-name adlssybapsekeyvault --query value -o tsv)
+#          if [ -z "$username" ]; then
+#            echo "Error: Unable to fetch SYNAPSE-USERNAME from Key Vault"
+#            exit 1
+#          fi
+#          echo "Fetching password from Key Vault..."
+#          password=$(az keyvault secret show --name SYNAPSE-PASSWORD --vault-name adlssybapsekeyvault --query value -o tsv)
+#          if [ -z "$password" ]; then
+#            echo "Error: Unable to fetch SYNAPSE-PASSWORD from Key Vault"
+#            exit 1
+#          fi
+#          echo "SYNAPSE_USERNAME=$username" >> $GITHUB_ENV
+#          echo "SYNAPSE_PASSWORD=$password" >> $GITHUB_ENV
+
+          
       - name: Set up SQLCMD
         run: |
           sudo apt-get update
@@ -60,4 +73,4 @@ jobs:
           SYNAPSE_USERNAME: ${{ env.SYNAPSE_USERNAME }}
           SYNAPSE_PASSWORD: ${{ env.SYNAPSE_PASSWORD }}
         run: |
-          sqlcmd -S $SYNAPSE_SERVER -U $SYNAPSE_USERNAME -P $SYNAPSE_PASSWORD -i ./sql/setup.sql
+          sqlcmd -S $SYNAPSE_SERVER -U $SYNAPSE_USERNAME -P $SYNAPSE_PASSWORD -i ./sql/queries.sql
