@@ -37,12 +37,8 @@ jobs:
           inlineScript: |
             username=$(az keyvault secret show --name SYNAPSE-USERNAME --vault-name adlssybapsekeyvault --query value -o tsv)
             password=$(az keyvault secret show --name SYNAPSE-PASSWORD --vault-name adlssybapsekeyvault --query value -o tsv)
-            echo "SYNAPSE_USERNAME=$username" >> $GITHUB_ENV
-            echo "SYNAPSE_PASSWORD=$password" >> $GITHUB_ENV
-        env:
-          AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
-          AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-          AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+            echo "SYNAPSE_USERNAME1=$username" >> $GITHUB_ENV
+            echo "SYNAPSE_PASSWORD1=$password" >> $GITHUB_ENV
 
           
       - name: Set up SQLCMD
