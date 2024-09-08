@@ -18,11 +18,12 @@ jobs:
       - name: Azure Login
         uses: azure/login@v1
         with:
-          client-id: ${{ secrets.AZURE_CLIENT_ID }}
-          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          client-secret: ${{ secrets.AZURE_CLIENT_SECRET }}
-          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-          auth-type: 'SERVICE_PRINCIPAL'  # Ensure auth-type is set to 'spn'
+#          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+#          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+#          client-secret: ${{ secrets.AZURE_CLIENT_SECRET }}
+#          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+#          auth-type: 'SERVICE_PRINCIPAL'  # Ensure auth-type is set to 'spn'
+           creds: ${{ secrets.AZURE_CREDENTIALS }}
           
       - name: Get Credentials from Key Vault
         id: get-credentials
