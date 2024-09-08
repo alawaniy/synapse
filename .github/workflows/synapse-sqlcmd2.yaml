@@ -45,13 +45,13 @@ jobs:
         run: |
           set -e
           echo "Fetching username from Key Vault..."
-          username=$(az keyvault secret show --name SYNAPSE-USERNAME --vault-name <Your-Key-Vault-Name> --query value -o tsv)
+          username=$(az keyvault secret show --name SYNAPSE-USERNAME --vault-name adlssybapsekeyvault --query value -o tsv)
           if [ -z "$username" ]; then
             echo "Error: Unable to fetch SYNAPSE-USERNAME from Key Vault"
             exit 1
           fi
           echo "Fetching password from Key Vault..."
-          password=$(az keyvault secret show --name SYNAPSE-PASSWORD --vault-name <Your-Key-Vault-Name> --query value -o tsv)
+          password=$(az keyvault secret show --name SYNAPSE-PASSWORD --vault-name adlssybapsekeyvault --query value -o tsv)
           if [ -z "$password" ]; then
             echo "Error: Unable to fetch SYNAPSE-PASSWORD from Key Vault"
             exit 1
