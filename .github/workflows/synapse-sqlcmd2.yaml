@@ -6,7 +6,10 @@ on:
       - main
   workflow_dispatch:  # Allows manual triggering
 
-
+permissions:
+  id-token: write  # Ensure write permissions for id-token
+  contents: read   # Example: read permissions for repository contents
+  
 jobs:
   execute-sqlcmd:
     runs-on: ubuntu-latest
