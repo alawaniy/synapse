@@ -26,4 +26,4 @@ jobs:
           SYNAPSE_USERNAME: ${{ secrets.SYNAPSE_USERNAME }}
           SYNAPSE_PASSWORD: ${{ secrets.SYNAPSE_PASSWORD }}
         run: |
-          sqlcmd -S $SYNAPSE_SERVER -U $SYNAPSE_USERNAME -P $SYNAPSE_PASSWORD -i ./sql/setup.sql
+          sqlcmd -S $SYNAPSE_SERVER -U $SYNAPSE_USERNAME -P $SYNAPSE_PASSWORD -i ./sql/queries.sql
