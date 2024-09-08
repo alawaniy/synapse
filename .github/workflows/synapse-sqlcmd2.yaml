@@ -56,8 +56,8 @@ jobs:
             echo "Error: Unable to fetch SYNAPSE-PASSWORD from Key Vault"
             exit 1
           fi
-          echo "SYNAPSE_USERNAME1=$username" >> $GITHUB_ENV
-          echo "SYNAPSE_PASSWORD1=$password" >> $GITHUB_ENV
+          echo "SYNAPSE_USERNAME=$username" >> $GITHUB_ENV
+          echo "SYNAPSE_PASSWORD=$password" >> $GITHUB_ENV
 
           
       - name: Set up SQLCMD
