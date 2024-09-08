@@ -1,14 +1,14 @@
 -- Step 1: Create the database if it doesn't exist
 IF NOT EXISTS (
-    SELECT * FROM sys.databases WHERE name = 'sqlcmdpayercurrent3'
+    SELECT * FROM sys.databases WHERE name = 'payments'
 )
 BEGIN
-    CREATE DATABASE sqlcmdpayercurrent3;
+    CREATE DATABASE payments;
 END
 GO
 
 -- Step 2: Use the database
-USE sqlcmdpayercurrent3;
+USE payments;
 GO
 
 -- Step 3: Create a Master Key if it doesn't exist
@@ -22,34 +22,34 @@ GO
 
 -- Step 4: Create a database-scoped credential if it doesn't exist
 IF NOT EXISTS (
-    SELECT * FROM sys.database_scoped_credentials WHERE name = 'WorkspaceIdentityCurrent3'
+    SELECT * FROM sys.database_scoped_credentials WHERE name = 'WorkspaceIdentity'
 )
 BEGIN
-    CREATE DATABASE SCOPED CREDENTIAL WorkspaceIdentityCurrent3
+    CREATE DATABASE SCOPED CREDENTIAL WorkspaceIdentity
     WITH IDENTITY = 'Managed Identity';
 END
 GO
 
 -- Step 5: Create an external data source if it doesn't exist
 IF NOT EXISTS (
-    SELECT * FROM sys.external_data_sources WHERE name = 'MyWorkspaceIdentityDataSourceCurrent3'
+    SELECT * FROM sys.external_data_sources WHERE name = 'MyWorkspaceIdentityDataSource'
 )
 BEGIN
-    CREATE EXTERNAL DATA SOURCE MyWorkspaceIdentityDataSourceCurrent3
+    CREATE EXTERNAL DATA SOURCE MyWorkspaceIdentityDataSource
     WITH (
         LOCATION = 'https://<ADLS_ACCOUNT_NAME>.dfs.core.windows.net/',
-        CREDENTIAL = WorkspaceIdentityCurrent3
+        CREDENTIAL = WorkspaceIdentity
     );
 END
 GO
 
 -- Step 6: Create a view using dynamic SQL if it doesn't exist
 IF NOT EXISTS (
-    SELECT * FROM sys.views WHERE name = 'UpdatedAccountYatharthCurrent3'
+    SELECT * FROM sys.views WHERE name = 'Accounts'
 )
 BEGIN
     DECLARE @sql NVARCHAR(MAX) = '
-    CREATE VIEW UpdatedAccountYatharthCurrent3 AS
+    CREATE VIEW Accounts AS
     SELECT
         event.[type],
         event.[version],
@@ -67,7 +67,7 @@ BEGIN
         payload.[accountType]
     FROM OPENROWSET(
         BULK ''accounts/day1/accounts1.json'',
-        DATA_SOURCE = ''MyWorkspaceIdentityDataSourceCurrent3'',
+        DATA_SOURCE = ''MyWorkspaceIdentityDataSource'',
         FORMAT = ''CSV'',
         FIELDTERMINATOR = ''0x0b'',
         FIELDQUOTE = ''0x0b'',
@@ -104,5 +104,5 @@ END
 GO
 
 -- Step 7: Query the view
-SELECT * FROM UpdatedAccountYatharthCurrent3;
+SELECT * FROM Accounts;
 GO
