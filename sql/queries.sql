@@ -1,9 +1,9 @@
 -- Step 1: Create the database
-CREATE DATABASE sqlcmdpayer111;
+CREATE DATABASE sqlcmdpayer1111;
 GO
 
 -- Step 2: Use the database
-USE sqlcmdpayer111;
+USE sqlcmdpayer1111;
 GO
 
 -- Step 3: Create a Master Key
@@ -11,15 +11,15 @@ CREATE MASTER KEY ENCRYPTION BY PASSWORD = 'Lawaniya3$12';
 GO
 
 -- Step 4: Create a database-scoped credential
-CREATE DATABASE SCOPED CREDENTIAL WorkspaceIdentity
+CREATE DATABASE SCOPED CREDENTIAL WorkspaceIdentity1
 WITH IDENTITY = 'Managed Identity';
 GO
 
 -- Step 5: Create an external data source
-CREATE EXTERNAL DATA SOURCE MyWorkspaceIdentityDataSource
+CREATE EXTERNAL DATA SOURCE MyWorkspaceIdentityDataSource1
 WITH (
     LOCATION = 'https://<ADLS_ACCOUNT_NAME>.dfs.core.windows.net/',
-    CREDENTIAL = WorkspaceIdentity
+    CREDENTIAL = WorkspaceIdentity1
 );
 GO
 
@@ -42,7 +42,7 @@ SELECT
     payload.[accountType]
 FROM OPENROWSET(
     BULK 'accounts/day1/accounts1.json',
-    DATA_SOURCE = 'MyWorkspaceIdentityDataSource',
+    DATA_SOURCE = 'MyWorkspaceIdentityDataSource1',
     FORMAT = 'CSV',
     FIELDTERMINATOR = '0x0b',
     FIELDQUOTE = '0x0b',
@@ -76,5 +76,5 @@ WITH (
 GO
 
 -- Step 7: Query the view
-SELECT * FROM UpdatedAccountYatharth111;
+SELECT * FROM UpdatedAccountYatharth1111;
 GO
