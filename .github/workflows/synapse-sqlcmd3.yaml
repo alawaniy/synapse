@@ -37,7 +37,7 @@ jobs:
           inlineScript: |
             username=$(az keyvault secret show --name SYNAPSE-USERNAME --vault-name adlssybapsekeyvault --query value -o tsv)
             password=$(az keyvault secret show --name SYNAPSE-PASSWORD --vault-name adlssybapsekeyvault --query value -o tsv)
-            adls_account_name=$(az keyvault secret show --name ADLS_ACCOUNT_NAME --vault-name <Your-Key-Vault-Name> --query value -o tsv)
+            adls_account_name=$(az keyvault secret show --name ADLS-ACCOUNT-NAME --vault-name <Your-Key-Vault-Name> --query value -o tsv)
             echo "SYNAPSE_USERNAME1=$username" >> $GITHUB_ENV
             echo "SYNAPSE_PASSWORD1=$password" >> $GITHUB_ENV
             echo "ADLS_ACCOUNT_NAME=$adls_account_name" >> $GITHUB_ENV
