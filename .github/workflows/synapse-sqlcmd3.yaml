@@ -28,20 +28,45 @@ jobs:
 #          auth-type: 'SERVICE_PRINCIPAL'  # Ensure auth-type is set to 'spn'
            creds: ${{ secrets.AZURE_CREDENTIALS }}
           
+#      - name: Get Credentials from Key Vault
+#        id: get-credentials
+#        uses: azure/CLI@v1
+#        with:
+#          azcliversion: 2.30.0
+#          scriptType: bash
+#          inlineScript: |
+#            username=$(az keyvault secret show --name SYNAPSE-USERNAME --vault-name adlssybapsekeyvault --query value -o tsv)
+#            password=$(az keyvault secret show --name SYNAPSE-PASSWORD --vault-name adlssybapsekeyvault --query value -o tsv)
+#            adls_account_name=$(az keyvault secret show --name ADLS-ACCOUNT-NAME --vault-name adlssybapsekeyvault --query value -o tsv)
+#            echo "SYNAPSE_USERNAME=$username" >> $GITHUB_ENV
+#            echo "SYNAPSE_PASSWORD=$password" >> $GITHUB_ENV
+#            echo "ADLS_ACCOUNT_NAME=$adls_account_name" >> $GITHUB_ENV
+
       - name: Get Credentials from Key Vault
         id: get-credentials
-        uses: azure/CLI@v1
-        with:
-          azcliversion: 2.30.0
-          scriptType: bash
-          inlineScript: |
-            username=$(az keyvault secret show --name SYNAPSE-USERNAME --vault-name adlssybapsekeyvault --query value -o tsv)
-            password=$(az keyvault secret show --name SYNAPSE-PASSWORD --vault-name adlssybapsekeyvault --query value -o tsv)
-            adls_account_name=$(az keyvault secret show --name ADLS-ACCOUNT-NAME --vault-name adlssybapsekeyvault --query value -o tsv)
-            echo "SYNAPSE_USERNAME=$username" >> $GITHUB_ENV
-            echo "SYNAPSE_PASSWORD=$password" >> $GITHUB_ENV
-            echo "ADLS_ACCOUNT_NAME=$adls_account_name" >> $GITHUB_ENV
-
+        run: |
+          set -e
+          echo "Fetching username from Key Vault..."
+          username=$(az keyvault secret show --name SYNAPSE-USERNAME --vault-name adlssybapsekeyvault --query value -o tsv)
+          if [ -z "$username" ]; then
+            echo "Error: Unable to fetch SYNAPSE-USERNAME from Key Vault"
+            exit 1
+          fi
+          echo "Fetching password from Key Vault..."
+          password=$(az keyvault secret show --name SYNAPSE-PASSWORD --vault-name adlssybapsekeyvault --query value -o tsv)
+          if [ -z "$password" ]; then
+            echo "Error: Unable to fetch SYNAPSE-PASSWORD from Key Vault"
+            exit 1
+          fi
+          echo "Fetching ADLS account name from Key Vault..."
+          adls_account_name=$(az keyvault secret show --name ADLS-ACCOUNT-NAME --vault-name adlssybapsekeyvault --query value -o tsv)
+          if [ -z "$adls_account_name" ]; then
+            echo "Error: Unable to fetch ADLS_ACCOUNT_NAME from Key Vault"
+            exit 1
+          fi
+          echo "SYNAPSE_USERNAME=$username" >> $GITHUB_ENV
+          echo "SYNAPSE_PASSWORD=$password" >> $GITHUB_ENV
+          echo "ADLS_ACCOUNT_NAME=$adls_account_name" >> $GITHUB_ENV
 
 #      - name: Get Credentials from Key Vault
 #        id: get-credentials
