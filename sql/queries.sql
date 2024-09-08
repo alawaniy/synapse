@@ -18,7 +18,7 @@ GO
 -- Step 5: Create an external data source
 CREATE EXTERNAL DATA SOURCE MyWorkspaceIdentityDataSource
 WITH (
-    LOCATION = 'https://adlssynapsepayeralawaniy.dfs.core.windows.net/',
+    LOCATION = 'https://<ADLS_ACCOUNT_NAME>.dfs.core.windows.net/',
     CREDENTIAL = WorkspaceIdentity
 );
 GO
