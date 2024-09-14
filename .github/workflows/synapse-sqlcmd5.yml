@@ -96,10 +96,6 @@ jobs:
             sed -i "s/<ADLS_ACCOUNT_NAME>/${{ env.ADLS_ACCOUNT_NAME }}/g" "$sql_file"
           done
 
-
-      - name: Pull SQL Server Tools Docker Image
-        run: docker pull mcr.microsoft.com/mssql-tools
-
       - name: Run SQL Scripts using Docker and sqlcmd
         env:
           SYNAPSE_SERVER: ${{ secrets.SYNAPSE_SERVER }}
