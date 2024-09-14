@@ -106,9 +106,9 @@ jobs:
          SYNAPSE_USERNAME: ${{ env.SYNAPSE_USERNAME }}
          SYNAPSE_PASSWORD: ${{ env.SYNAPSE_PASSWORD }}
         run: |
-         pwsh -Command "
-         foreach ($sqlFile in Get-ChildItem -Path './sql/*.sql') {
-         Write-Host 'Running ' $sqlFile.FullName
-         Invoke-SqlCmd -ServerInstance '${{ secrets.SYNAPSE_SERVER }}' -Username '${{ env.SYNAPSE_USERNAME }}' -Password '${{ env.SYNAPSE_PASSWORD }}' -InputFile $sqlFile.FullName
-         }
-         "
+          $sqlFiles = Get-ChildItem -Path './sql/*.sql'
+          foreach ($file in $sqlFiles) {
+              Write-Host "Running $($file.FullName)..."
+              sqlcmd -S $env:SYNAPSE_SERVER -U $env:SYNAPSE_USERNAME -P $env:SYNAPSE_PASSWORD -i $file.FullName
+          }
+
