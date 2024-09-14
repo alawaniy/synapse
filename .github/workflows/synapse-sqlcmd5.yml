@@ -88,12 +88,6 @@ jobs:
 #          echo "SYNAPSE_PASSWORD=$password" >> $GITHUB_ENV
 
           
-      - name: Set up SQLCMD
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y mssql-tools unixodbc-dev
-          echo 'export PATH="$PATH:/opt/mssql-tools/bin"' >> ~/.bashrc
-          source ~/.bashrc
 
       - name: Update SQL scripts with ADLS account name
         run: |
@@ -103,13 +97,17 @@ jobs:
           done
 
 
-      - name: Run SQL scripts
+      - name: Pull SQL Server Tools Docker Image
+        run: docker pull mcr.microsoft.com/mssql-tools
+
+      - name: Run SQL Scripts using Docker and sqlcmd
         env:
           SYNAPSE_SERVER: ${{ secrets.SYNAPSE_SERVER }}
           SYNAPSE_USERNAME: ${{ env.SYNAPSE_USERNAME }}
           SYNAPSE_PASSWORD: ${{ env.SYNAPSE_PASSWORD }}
         run: |
-          for sql_file in ./sql/*.sql; do
+          docker run --rm -v $PWD/sql:/sql mcr.microsoft.com/mssql-tools bash -c '
+          for sql_file in /sql/*.sql; do
             echo "Running $sql_file..."
             sqlcmd -S $SYNAPSE_SERVER -U $SYNAPSE_USERNAME -P $SYNAPSE_PASSWORD -i "$sql_file"
           done
