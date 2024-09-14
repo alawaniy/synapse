@@ -95,20 +95,23 @@ jobs:
             echo "Updating $sql_file with ADLS account name..."
             sed -i "s/<ADLS_ACCOUNT_NAME>/${{ env.ADLS_ACCOUNT_NAME }}/g" "$sql_file"
           done
+          
       - name: Install PowerShell and SQLServer module
         run: |
-         sudo apt-get install -y powershell
-         pwsh -Command "Install-Module -Name SqlServer -Force"
+          sudo apt-get update
+          sudo apt-get install -y powershell
+          pwsh -Command "Install-Module -Name SqlServer -Force -AllowClobber"
 
       - name: Execute SQL Scripts using PowerShell
+        shell: pwsh
         env:
-         SYNAPSE_SERVER: ${{ secrets.SYNAPSE_SERVER }}
-         SYNAPSE_USERNAME: ${{ env.SYNAPSE_USERNAME }}
-         SYNAPSE_PASSWORD: ${{ env.SYNAPSE_PASSWORD }}
+          SYNAPSE_SERVER: ${{ secrets.SYNAPSE_SERVER }}
+          SYNAPSE_USERNAME: ${{ env.SYNAPSE_USERNAME }}
+          SYNAPSE_PASSWORD: ${{ env.SYNAPSE_PASSWORD }}
         run: |
           $sqlFiles = Get-ChildItem -Path './sql/*.sql'
           foreach ($file in $sqlFiles) {
               Write-Host "Running $($file.FullName)..."
-              sqlcmd -S $env:SYNAPSE_SERVER -U $env:SYNAPSE_USERNAME -P $env:SYNAPSE_PASSWORD -i $file.FullName
+              Invoke-Sqlcmd -ServerInstance $env:SYNAPSE_SERVER -Username $env:SYNAPSE_USERNAME -Password $env:SYNAPSE_PASSWORD -InputFile $file.FullName
           }
 
