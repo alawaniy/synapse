@@ -102,6 +102,14 @@ jobs:
           SYNAPSE_USERNAME: ${{ env.SYNAPSE_USERNAME }}
           SYNAPSE_PASSWORD: ${{ env.SYNAPSE_PASSWORD }}
         run: |
-           docker run --rm -v $PWD/sql:/sql mcr.microsoft.com/mssql/server:2019-latest bash -c "
-           /opt/mssql-tools/bin/sqlcmd -S $SYNAPSE_SERVER -U $SYNAPSE_USERNAME -P $SYNAPSE_PASSWORD -i /sql/*.sql"
+          docker run --rm -v $PWD/sql:/sql mcr.microsoft.com/mssql/server:2019-latest bash -c "
+          apt-get update && apt-get install -y curl gnupg && \
+          curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add - && \
+          curl https://packages.microsoft.com/config/ubuntu/20.04/prod.list > /etc/apt/sources.list.d/mssql-release.list && \
+          apt-get update && ACCEPT_EULA=Y apt-get install -y msodbcsql17 mssql-tools unixodbc-dev && \
+          for sql_file in /sql/*.sql; do
+          echo 'Running $sql_file...'
+          /opt/mssql-tools/bin/sqlcmd -S $SYNAPSE_SERVER -U $SYNAPSE_USERNAME -P $SYNAPSE_PASSWORD -i \"$sql_file\"
+          done
+          "
 
