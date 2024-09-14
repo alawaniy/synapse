@@ -108,9 +108,9 @@ jobs:
         run: |
           for sql_file in ./sql/*.sql; do
           echo "Running $sql_file..."
-          az sql db query --resource-group ${{ secrets.RESOURCE_GROUP }} \
+          az sql db query --resource-group adlssynapse \
           --server $SYNAPSE_SERVER \
-          --database ${{ secrets.SYNAPSE_DATABASE }} \
+          --database master \
           --query "$(cat $sql_file)"
           done
 
