@@ -107,6 +107,5 @@ jobs:
           SYNAPSE_PASSWORD: ${{ env.SYNAPSE_PASSWORD }}
         run: |
            docker run --rm -v $PWD/sql:/sql mcr.microsoft.com/mssql/server:2019-latest bash -c "
-           /opt/mssql-tools/bin/sqlcmd -S $SYNAPSE_SERVER -U $SYNAPSE_USERNAME -P $SYNAPSE_PASSWORD -i /sql/*.sql
-          "
+           /opt/mssql-tools/bin/sqlcmd -S $SYNAPSE_SERVER -U $SYNAPSE_USERNAME -P $SYNAPSE_PASSWORD -i /sql/*.sql"
 
