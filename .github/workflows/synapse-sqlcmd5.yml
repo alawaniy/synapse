@@ -109,5 +109,5 @@ jobs:
           docker run --rm -v $PWD/sql:/sql mcr.microsoft.com/mssql-tools bash -c '
           for sql_file in /sql/*.sql; do
             echo "Running $sql_file..."
-            sqlcmd -S $SYNAPSE_SERVER -U $SYNAPSE_USERNAME -P $SYNAPSE_PASSWORD -i "$sql_file"
-          done
+            sqlcmd -S $SYNAPSE_SERVER -U $SYNAPSE_USERNAME -P $SYNAPSE_PASSWORD -i \"$sql_file\"
+            done"
