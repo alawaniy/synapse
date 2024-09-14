@@ -95,26 +95,20 @@ jobs:
             echo "Updating $sql_file with ADLS account name..."
             sed -i "s/<ADLS_ACCOUNT_NAME>/${{ env.ADLS_ACCOUNT_NAME }}/g" "$sql_file"
           done
-
-      - name: Install Azure CLI
+      - name: Install PowerShell and SQLServer module
         run: |
-          curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
+         sudo apt-get install -y powershell
+         pwsh -Command "Install-Module -Name SqlServer -Force"
 
-      - name: Execute SQL Scripts using Azure CLI
+      - name: Execute SQL Scripts using PowerShell
         env:
-          SYNAPSE_SERVER: ${{ secrets.SYNAPSE_SERVER }}
-          SYNAPSE_USERNAME: ${{ env.SYNAPSE_USERNAME }}
-          SYNAPSE_PASSWORD: ${{ env.SYNAPSE_PASSWORD }}
+         SYNAPSE_SERVER: ${{ secrets.SYNAPSE_SERVER }}
+         SYNAPSE_USERNAME: ${{ env.SYNAPSE_USERNAME }}
+         SYNAPSE_PASSWORD: ${{ env.SYNAPSE_PASSWORD }}
         run: |
-          for sql_file in ./sql/*.sql; do
-            echo "Running $sql_file..."
-            query=$(<"$sql_file")
-            az sql db query \
-              --server $SYNAPSE_SERVER \
-              --database master \
-              --auth-type sql \
-              --username $SYNAPSE_USERNAME \
-              --password $SYNAPSE_PASSWORD \
-              --query "$query"
-          done
-
+         pwsh -Command "
+         foreach ($sqlFile in Get-ChildItem -Path './sql/*.sql') {
+         Write-Host 'Running ' $sqlFile.FullName
+         Invoke-SqlCmd -ServerInstance '${{ secrets.SYNAPSE_SERVER }}' -Username '${{ env.SYNAPSE_USERNAME }}' -Password '${{ env.SYNAPSE_PASSWORD }}' -InputFile $sqlFile.FullName
+         }
+         "
