@@ -1,14 +1,14 @@
 -- Step 1: Create the database if it doesn't exist
 IF NOT EXISTS (
-    SELECT * FROM sys.databases WHERE name = 'payments'
+    SELECT * FROM sys.databases WHERE name = 'payments1'
 )
 BEGIN
-    CREATE DATABASE payments;
+    CREATE DATABASE payments1;
 END
 GO
 
 -- Step 2: Use the database
-USE payments;
+USE payments1;
 GO
 
 -- Step 3: Create a Master Key if it doesn't exist
